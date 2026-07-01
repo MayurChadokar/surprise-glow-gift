@@ -188,3 +188,69 @@
   background-size: 200% 100%;
   animation: shimmer 3s linear infinite;
 }
+
+/* Envelope */
+.envelope-wrap { perspective: 1200px; }
+.envelope {
+  position: relative;
+  width: min(88vw, 420px);
+  height: min(60vw, 280px);
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+  cursor: pointer;
+}
+.envelope:hover { transform: translateY(-6px); }
+.envelope-body {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, oklch(0.82 0.14 350), oklch(0.68 0.18 340));
+  border-radius: 12px;
+  box-shadow: var(--glow-pink), 0 30px 60px -20px oklch(0.14 0.04 300 / 0.7), inset 0 0 40px oklch(1 0 0 / 0.08);
+  overflow: hidden;
+}
+.envelope-body::before,
+.envelope-body::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(45deg, transparent 49.5%, oklch(0.55 0.16 340) 50%, transparent 50.5%),
+    linear-gradient(-45deg, transparent 49.5%, oklch(0.55 0.16 340) 50%, transparent 50.5%);
+  opacity: 0.35;
+}
+.envelope-flap {
+  position: absolute; top: 0; left: 0; right: 0; height: 55%;
+  background: linear-gradient(180deg, oklch(0.86 0.14 350), oklch(0.72 0.17 345));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transition: transform 0.9s cubic-bezier(.6,-0.05,.3,1);
+  z-index: 3;
+  box-shadow: inset 0 -8px 20px oklch(0.4 0.15 340 / 0.35);
+}
+.envelope.open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
+.envelope-letter {
+  position: absolute; left: 6%; right: 6%; bottom: 8%;
+  height: 78%;
+  background: linear-gradient(180deg, #fff9f2, #ffeef6);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px oklch(0.14 0.04 300 / 0.5);
+  transform: translateY(0);
+  transition: transform 0.9s ease 0.5s;
+  z-index: 2;
+  padding: 18px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  color: oklch(0.35 0.1 340);
+  font-family: var(--font-display);
+}
+.envelope.open .envelope-letter { transform: translateY(-55%); }
+.envelope-seal {
+  position: absolute; top: 44%; left: 50%;
+  width: 56px; height: 56px; margin-left: -28px; margin-top: -28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--gold), oklch(0.5 0.12 60));
+  box-shadow: var(--glow-gold), inset 0 -6px 10px oklch(0.3 0.1 60 / 0.6);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-family: var(--font-script); font-size: 26px;
+  z-index: 4;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.envelope.open .envelope-seal { opacity: 0; transform: scale(0.5); }
+

@@ -61,26 +61,45 @@ function Loader() {
 
 // ─── LANDING ─────────────────────────────────────────────────────────────────
 function LandingCard({ onOpen }: { onOpen: () => void }) {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    if (open) { onOpen(); return; }
+    setOpen(true);
+    setTimeout(onOpen, 1600);
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center px-6">
+    <div className="fixed inset-0 flex flex-col items-center justify-center px-6 gap-8">
       <ParticleField />
-      <div className="glass rounded-3xl p-10 md:p-16 max-w-xl text-center animate-fade-up relative overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full opacity-40 animate-glow-pulse" style={{ background: "var(--pink)", filter: "blur(80px)" }} />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full opacity-40 animate-glow-pulse" style={{ background: "var(--purple)", filter: "blur(80px)", animationDelay: "1.5s" }} />
-        <div className="relative">
-          <p className="text-sm uppercase tracking-[0.4em] text-gold mb-6">A little surprise</p>
-          <h1 className="text-5xl md:text-7xl mb-4 text-gradient">Hi, {HER_NAME} 👋</h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 font-light">
-            I made something special just for you.
-          </p>
-          <button onClick={onOpen} className="btn-premium btn-premium-hover text-base md:text-lg">
-            Open Your Birthday Surprise <span className="text-xl">❤️</span>
-          </button>
+      <div className="text-center animate-fade-up">
+        <p className="text-sm uppercase tracking-[0.4em] text-gold mb-3">A little surprise</p>
+        <h1 className="text-4xl md:text-6xl text-gradient mb-2">Hi, {HER_NAME} 👋</h1>
+        <p className="text-muted-foreground font-light italic">You've got a letter…</p>
+      </div>
+
+      <div className="envelope-wrap animate-fade-up" style={{ animationDelay: "0.2s" }}>
+        <div className={`envelope ${open ? "open" : ""}`} onClick={handleClick} role="button" aria-label="Open the letter">
+          <div className="envelope-body" />
+          <div className="envelope-letter">
+            <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "oklch(0.55 0.14 340)" }}>For You</p>
+            <p className="text-2xl md:text-3xl" style={{ fontFamily: "var(--font-script)", color: "oklch(0.45 0.15 340)" }}>
+              Happy Birthday, {HER_NAME}
+            </p>
+            <p className="text-sm mt-3 opacity-70">Tap again to continue ❤️</p>
+          </div>
+          <div className="envelope-flap" />
+          <div className="envelope-seal">❤</div>
         </div>
       </div>
+
+      <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground animate-glow-pulse">
+        {open ? "Opening…" : "Tap the envelope"}
+      </p>
     </div>
   );
 }
+
 
 // ─── MAIN EXPERIENCE ─────────────────────────────────────────────────────────
 function MainExperience() {
