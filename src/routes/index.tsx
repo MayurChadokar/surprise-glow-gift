@@ -5,15 +5,12 @@ import confetti from "canvas-confetti";
 // ─────────────────────────────────────────────────────────────────────────────
 // CUSTOMIZE HERE
 // ─────────────────────────────────────────────────────────────────────────────
-const HER_NAME = "Beautiful";
+const HER_NAME = "Nandini";
 const MUSIC_URL = "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946bc4a2b3.mp3?filename=romantic-piano-11895.mp3";
 const GALLERY = [
-  "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800",
-  "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800",
-  "https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?w=800",
-  "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800",
-  "https://images.unsplash.com/photo-1533450718592-29d45635f0a9?w=800",
+  "/images/WhatsApp Image 2026-03-14 at 12.05.42 AM (1).jpeg",
+  "/images/WhatsApp Image 2026-03-14 at 12.05.42 AM (2).jpeg",
+  "/images/WhatsApp Image 2026-03-14 at 12.05.41 AM.jpeg",
 ];
 const WISHES = [
   "Stay happy always ✨",
@@ -88,6 +85,7 @@ function LandingCard({ onOpen }: { onOpen: () => void }) {
             </p>
             <p className="text-sm mt-3 opacity-70">Tap again to continue ❤️</p>
           </div>
+          <div className="envelope-front" />
           <div className="envelope-flap" />
           <div className="envelope-seal">❤</div>
         </div>
@@ -101,29 +99,212 @@ function LandingCard({ onOpen }: { onOpen: () => void }) {
 }
 
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TIMELINE IMAGES AND DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const TIMELINE_DATA = [
+  {
+    id: 1,
+    date: "31/01/2026",
+    title: "The Beginning",
+    description: "Where our journey started. A special date that marked a new chapter filled with hope and excitement.",
+    images: [
+      "/images/WhatsApp Image 2026-07-02 at 10.04.29 PM.jpeg",
+      "/images/WhatsApp Image 2026-07-02 at 10.04.29 PM (1).jpeg",
+    ],
+    audioUrl: "/Shivaay – Darkhaast.mp3",
+  },
+  {
+    id: 2,
+    date: "14/02/2026",
+    title: "Valentine's Magic",
+    description: "A day filled with warmth, love, and sweet moments. Celebrating the bond that grew stronger every single day.",
+    images: [
+      "/images/WhatsApp Image 2026-07-02 at 10.04.28 PM.jpeg",
+    ],
+  },
+  {
+    id: 3,
+    date: "15/02/2026",
+    title: "Cherished Memories",
+    description: "Continuing the beautiful celebration. Capturing laughter, bright eyes, and the comfort of being together.",
+    images: [
+      "/images/WhatsApp Image 2026-03-14 at 12.05.19 AM.jpeg",
+    ],
+  },
+  {
+    id: 4,
+    date: "27/06/2026",
+    title: "Our Beautiful Destination",
+    description: "Looking back at the memories created and smiling. A perfect milestone celebrating you and the happiness you bring.",
+    images: [
+      "/images/WhatsApp Image 2026-07-02 at 10.04.26 PM.jpeg",
+    ],
+  },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─── IMAGE SLIDER COMPONENT ──────────────────────────────────────────────────
+function ImageSlider({ images, title, onImageClick, onViewed }: { images: string[]; title: string; onImageClick: (src: string) => void; onViewed: (src: string) => void }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [images]);
+
+  // Reset index when active milestone changes
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
+
+  // Report viewed image
+  useEffect(() => {
+    if (images[currentIndex]) {
+      onViewed(images[currentIndex]);
+    }
+  }, [currentIndex, images, onViewed]);
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <div 
+      onClick={() => onImageClick(images[currentIndex])}
+      className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-md mx-auto aspect-[4/5] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] group bg-neutral-900 border border-white/10 cursor-pointer transition-transform duration-500 hover:scale-[1.02]"
+    >
+      {/* Slides */}
+      <div className="relative w-full h-full">
+        {images.map((src, idx) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
+          >
+            <img
+              src={src}
+              alt={`${title} slide ${idx + 1}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation Arrows */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-25 w-10 h-10 rounded-full bg-black/50 hover:bg-pink backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/10"
+            aria-label="Previous image"
+          >
+            ◀
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-25 w-10 h-10 rounded-full bg-black/50 hover:bg-pink backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/10"
+            aria-label="Next image"
+          >
+            ▶
+          </button>
+        </>
+      )}
+
+      {/* Bottom Indicators */}
+      {images.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-25 flex gap-2">
+          {images.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentIndex(idx);
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === currentIndex ? "w-6 bg-pink" : "w-1.5 bg-white/40"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Movie-style overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none z-15" />
+    </div>
+  );
+}
+
 // ─── MAIN EXPERIENCE ─────────────────────────────────────────────────────────
 function MainExperience() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [musicOn, setMusicOn] = useState(true);
+  const [activeStep, setActiveStep] = useState(0);
+  const [unlockedSteps, setUnlockedSteps] = useState<number[]>([0]);
+  const [galleryActive, setGalleryActive] = useState(false);
+
+  // Handle active audio track based on current timeline milestone or active gallery section
+  useEffect(() => {
+    let targetAudioUrl = TIMELINE_DATA[activeStep]?.audioUrl || MUSIC_URL;
+
+    // Switch to Happy Birthday song when scrolling in/to the gallery section
+    if (galleryActive) {
+      targetAudioUrl = "https://raw.githubusercontent.com/ProgrammerGaurav/happy-birthday/master/music.mp3";
+    }
+    
+    if (!audioRef.current) {
+      audioRef.current = new Audio(targetAudioUrl);
+      audioRef.current.volume = 0.35;
+    } else {
+      // Check if the source needs to be updated
+      const currentSrc = audioRef.current.src;
+      const targetAbsolute = targetAudioUrl.startsWith("http") 
+        ? targetAudioUrl 
+        : window.location.origin + targetAudioUrl;
+        
+      if (currentSrc !== targetAbsolute) {
+        audioRef.current.pause();
+        audioRef.current.src = targetAudioUrl;
+      }
+    }
+
+    // Always enforce looping
+    audioRef.current.loop = true;
+
+    if (musicOn) {
+      audioRef.current.play().catch((err) => console.log("Audio play blocked:", err));
+    } else {
+      audioRef.current.pause();
+    }
+  }, [activeStep, musicOn, galleryActive]);
 
   useEffect(() => {
     // opening burst
     fireConfetti();
-    const audio = new Audio(MUSIC_URL);
-    audio.loop = true;
-    audio.volume = 0.35;
-    audio.play().catch(() => {});
-    audioRef.current = audio;
     return () => {
-      audio.pause();
-      audio.src = "";
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
     };
   }, []);
 
   const toggleMusic = () => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (a.paused) { a.play(); setMusicOn(true); } else { a.pause(); setMusicOn(false); }
+    setMusicOn(!musicOn);
   };
 
   return (
@@ -139,12 +320,202 @@ function MainExperience() {
       </button>
 
       <HeroSection />
-      <GallerySection />
-      <LetterSection />
       <CakeSection />
+      <TimelineSection 
+        activeStep={activeStep} 
+        setActiveStep={setActiveStep} 
+        unlockedSteps={unlockedSteps} 
+        setUnlockedSteps={setUnlockedSteps} 
+      />
+      <GallerySection onVisibleChange={setGalleryActive} />
       <MemoryWallSection />
+      <LetterSection />
       <FinaleSection />
     </div>
+  );
+}
+
+// ─── TIMELINE SECTION ────────────────────────────────────────────────────────
+interface TimelineSectionProps {
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  unlockedSteps: number[];
+  setUnlockedSteps: (steps: number[]) => void;
+}
+
+function TimelineSection({ activeStep, setActiveStep, unlockedSteps, setUnlockedSteps }: TimelineSectionProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [viewedImages, setViewedImages] = useState<Record<string, boolean>>({});
+
+  const handleViewed = (src: string) => {
+    setViewedImages((prev) => {
+      if (prev[src]) return prev;
+      return { ...prev, [src]: true };
+    });
+  };
+
+  const currentMilestone = TIMELINE_DATA[activeStep];
+  const allImagesViewed = currentMilestone.images.every(img => viewedImages[img]);
+
+  const unlockNext = () => {
+    if (activeStep < TIMELINE_DATA.length - 1 && allImagesViewed) {
+      const nextStep = activeStep + 1;
+      setActiveStep(nextStep);
+      if (!unlockedSteps.includes(nextStep)) {
+        setUnlockedSteps([...unlockedSteps, nextStep]);
+      }
+      // Trigger a confetti burst on unlocking new steps
+      fireConfetti();
+    }
+  };
+
+  const handleStepClick = (index: number) => {
+    if (unlockedSteps.includes(index)) {
+      setActiveStep(index);
+    }
+  };
+
+  return (
+    <section className="py-24 px-6 max-w-7xl mx-auto relative overflow-hidden">
+      <SectionHeading eyebrow="Our Journey" title="A Beautiful Timeline" />
+
+      {/* Single Line Timeline Track */}
+      <div className="mt-20 relative max-w-4xl mx-auto px-4 md:px-12">
+        {/* Connection Line */}
+        <div className="absolute top-1/2 left-0 right-0 h-1 bg-neutral-800 -translate-y-1/2 z-0 rounded-full">
+          <div
+            className="h-full bg-gradient-to-r from-pink via-lavender to-gold transition-all duration-700 ease-out"
+            style={{
+              width: `${(unlockedSteps.length - 1) / (TIMELINE_DATA.length - 1) * 100}%`,
+            }}
+          />
+        </div>
+
+        {/* Milestone Nodes */}
+        <div className="relative flex justify-between items-center z-10">
+          {TIMELINE_DATA.map((item, idx) => {
+            const isUnlocked = unlockedSteps.includes(idx);
+            const isActive = activeStep === idx;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleStepClick(idx)}
+                disabled={!isUnlocked}
+                className={`relative flex flex-col items-center group focus:outline-none transition-all duration-500 ${
+                  isUnlocked ? "cursor-pointer" : "cursor-not-allowed opacity-40"
+                }`}
+              >
+                {/* Node bubble */}
+                <div
+                  className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center font-display text-xs md:text-sm transition-all duration-500 ${
+                    isActive
+                      ? "scale-115 text-neutral-900 font-bold border-4 border-white shadow-[0_0_25px_var(--pink)]"
+                      : isUnlocked
+                      ? "text-white border-2 border-pink/60 hover:scale-105"
+                      : "text-neutral-500 border-2 border-neutral-700"
+                  }`}
+                  style={{
+                    background: isActive
+                      ? "linear-gradient(135deg, var(--pink), var(--gold))"
+                      : isUnlocked
+                      ? "var(--card)"
+                      : "#111",
+                  }}
+                >
+                  {idx + 1}
+                </div>
+
+                {/* Node Date Label */}
+                <span
+                  className={`absolute -bottom-10 whitespace-nowrap text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 ${
+                    isActive ? "text-gold font-bold scale-105" : isUnlocked ? "text-neutral-200" : "text-neutral-500"
+                  }`}
+                >
+                  {item.date}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Active Milestone Card & Photos */}
+      <div className="mt-24 max-w-5xl mx-auto animate-fade-up" key={activeStep}>
+        <div className="glass rounded-3xl p-6 md:p-12 relative overflow-hidden shadow-2xl border border-white/10">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pink to-transparent animate-shimmer" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+            {/* Description Text */}
+            <div className="lg:col-span-2 space-y-4 text-left">
+              <span className="text-xs uppercase tracking-[0.3em] text-pink font-semibold">Milestone {activeStep + 1}</span>
+              <h3 className="text-3xl md:text-4xl text-gradient font-display font-bold leading-tight">
+                {TIMELINE_DATA[activeStep].title}
+              </h3>
+              <p className="text-sm md:text-base text-gold font-medium font-mono">{TIMELINE_DATA[activeStep].date}</p>
+              
+              {/* Progress/View Checkmark Indicators */}
+              <div className="flex items-center gap-2">
+                {allImagesViewed ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold tracking-wider uppercase animate-fade-up">
+                    ✓ All Memories Seen
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold tracking-wider uppercase animate-glow-pulse">
+                    👁 View all slides ({currentMilestone.images.filter(img => viewedImages[img]).length} / {currentMilestone.images.length})
+                  </span>
+                )}
+              </div>
+
+              <p className="text-neutral-300 font-light leading-relaxed pt-2">
+                {TIMELINE_DATA[activeStep].description}
+              </p>
+
+              {/* Progress Button */}
+              {activeStep < TIMELINE_DATA.length - 1 ? (
+                <button
+                  onClick={unlockNext}
+                  disabled={!allImagesViewed}
+                  className={`mt-6 text-sm py-3 px-6 rounded-full transition-all duration-300 ${
+                    allImagesViewed 
+                      ? "btn-premium btn-premium-hover cursor-pointer" 
+                      : "bg-neutral-800 text-neutral-500 border border-neutral-700 cursor-not-allowed opacity-60"
+                  }`}
+                >
+                  Unlock Next Date ➔
+                </button>
+              ) : (
+                <div className="inline-block mt-6 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs uppercase tracking-widest font-bold">
+                  ✨ Journey Unfolded 🎉
+                </div>
+              )}
+            </div>
+
+            {/* Photos slider */}
+            <div className="lg:col-span-3">
+              <ImageSlider 
+                images={TIMELINE_DATA[activeStep].images} 
+                title={TIMELINE_DATA[activeStep].title} 
+                onImageClick={setSelectedImage} 
+                onViewed={handleViewed}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Lightbox for Timeline Images */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-2xl transition-opacity duration-300"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[85vh]">
+            <img src={selectedImage} alt="Enlarged memory" className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border border-white/10 object-contain" />
+            <button className="absolute -top-10 right-0 text-white text-3xl hover:text-pink transition-colors">✕</button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -171,29 +542,93 @@ function HeroSection() {
 }
 
 // ─── GALLERY ─────────────────────────────────────────────────────────────────
-function GallerySection() {
-  const [lightbox, setLightbox] = useState<string | null>(null);
+function GalleryItem({ src, index, onClick }: { src: string; index: number; onClick: () => void }) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="py-24 px-6 max-w-7xl mx-auto">
+    <button
+      ref={ref}
+      onClick={onClick}
+      className={`group glass rounded-3xl overflow-hidden aspect-[4/5] relative transition-all duration-1000 ease-out transform ${
+        visible 
+          ? "opacity-100 translate-y-0 scale-100 rotate-0" 
+          : "opacity-0 translate-y-16 scale-90 -rotate-2"
+      }`}
+      style={{ 
+        boxShadow: "var(--shadow-glass), 0 0 30px oklch(0.78 0.17 350 / 0.12)",
+        transitionDelay: `${(index % 3) * 150}ms`
+      }}
+    >
+      <img
+        src={src}
+        alt={`Memory ${index + 1}`}
+        loading="lazy"
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-8">
+        <span className="text-white text-xs uppercase tracking-[0.2em] bg-pink/80 px-4 py-2 rounded-full backdrop-blur-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 font-semibold border border-white/10">
+          View Memory 🔍
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function GallerySection({ onVisibleChange }: { onVisibleChange: (visible: boolean) => void }) {
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        onVisibleChange(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => observer.disconnect();
+  }, [onVisibleChange]);
+
+  return (
+    <section ref={ref} className="py-24 px-6 max-w-7xl mx-auto">
       <SectionHeading eyebrow="Moments" title="A Little Gallery" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
         {GALLERY.map((src, i) => (
-          <button
+          <GalleryItem
             key={i}
+            src={src}
+            index={i}
             onClick={() => setLightbox(src)}
-            className="group glass rounded-3xl overflow-hidden aspect-[4/5] relative animate-fade-up"
-            style={{ animationDelay: `${i * 0.1}s`, boxShadow: "var(--shadow-glass), 0 0 30px oklch(0.78 0.17 350 / 0.15)" }}
-          >
-            <img
-              src={src}
-              alt={`Memory ${i + 1}`}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+          />
         ))}
       </div>
+
+      {/* Happy Birthday Cutie Text */}
+      <div className="mt-16 text-center animate-fade-up">
+        <h3 className="text-3xl md:text-5xl font-script text-gold" style={{ textShadow: "var(--glow-gold)" }}>
+          Happy Birthday Cutie! 💖🌸
+        </h3>
+      </div>
+
       {lightbox && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-fade-up"
@@ -208,21 +643,36 @@ function GallerySection() {
 }
 
 // ─── LETTER ──────────────────────────────────────────────────────────────────
-const LETTER = `Hi ${HER_NAME},
+const LETTER = `Hey ${HER_NAME}, Happy Birthday! 🎉❤️
 
-I know everyone sends birthday messages.
-So instead of just sending a text,
-I wanted to create something you'll remember.
+Mujhe pata hai ki tumhe mujhse pehle wish karne wale aur bhi bahut log honge, aur shayad woh meri comparison mein tumhari zyada care bhi karte honge. Bas main itna chahta tha ki aaj ke din tumhare chehre par hamesha ek smile rahe.
 
-I hope this birthday brings you happiness,
-beautiful memories,
-good health,
-and everything you've been wishing for.
+I hope ye naya saal tumhari life mein bahut saari happiness, success aur beautiful memories lekar aaye. Khush raho, healthy raho, aur apne saare dreams achieve karo.
 
-Keep smiling,
-because it suits you.
 
-Happy Birthday ❤️`;
+Once again, Happy Birthday! 🎂✨
+
+I think apni ye last mulaqat ho. Theek hai... khush raho yaar. Ja bhi rahi ho, theek hai...
+
+Goodbye from my side. Once again, Happy Birthday!
+
+Thanks for the most beautiful memories jo maine tumhare saath spend ki hain.
+
+But waqt aa gaya hai ki tumse alvida le liya jaye. Khush raho yaar, bas.
+
+Main tumhare liye kuch complex nahi kar raha hoon, bas side hat raha hoon, because yaar, mujhse jyda pyaar krne wale log hai yr.
+
+So please, stay healthy, stay safe.
+
+Maybe bas ek baar aur milenge, if...
+
+Aur jab bhi future mein kabhi milo, to mujhe ignore ya gusse se mat milna yaar. I don't want that. Jab bhi kabhi milein, bas chehre par ek smile ho.
+
+Aur haan, saath mein bahut achhi yaadein bhi hain.
+
+Sooooo... Goodbye, ${HER_NAME}. ❤️
+
+– Mayur`;
 
 function LetterSection() {
   const [text, setText] = useState("");
@@ -382,16 +832,16 @@ function FinaleSection() {
     <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
       <StarsBackground />
       <div className="relative z-10 text-center max-w-2xl animate-fade-up">
-        <h2 className="text-5xl md:text-7xl mb-6 text-gradient">Thank you for visiting.</h2>
+        <h2 className="text-5xl md:text-7xl mb-6 text-gradient">Thank you for everything.</h2>
         <p className="text-lg md:text-xl text-muted-foreground mb-12 italic font-light">
-          I hope this little surprise made you smile.
+          Goody Byee.<br /><br />I really miss you.
         </p>
         <button onClick={celebrate} className="btn-premium btn-premium-hover text-lg" style={{ boxShadow: "var(--glow-gold), 0 0 80px oklch(0.78 0.17 350 / 0.6)" }}>
           Happy Birthday Once Again ❤️
         </button>
         {final && (
           <p className="mt-16 text-2xl md:text-3xl font-script text-gold animate-fade-up">
-            Made with ❤️ especially for you.
+            Alvida... ❤️
           </p>
         )}
       </div>
